@@ -1,0 +1,186 @@
+const SHOE_MODEL_URL =
+  'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb';
+
+export const SHOES = [
+  {
+    id: '1',
+    name: 'Phantom Velocity X',
+    brand: 'VeloSnak Elite',
+    category: 'Performance',
+    price: 295,
+    compareAtPrice: 340,
+    image:
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400',
+    description:
+      'A lightweight runner with a cushioned midsole, breathable knit upper, and a sharp midnight finish made for daily wear.',
+    shortBlurb: 'Lightweight comfort with a cleaner, dressed-up finish.',
+    colorway: 'Midnight / Cyan Spark',
+    hypeScore: 97,
+    accentColor: '#00f2ff',
+    modelUrl: SHOE_MODEL_URL,
+    sizes: ['US 7', 'US 8', 'US 9', 'US 10', 'US 11'],
+    materials: ['Prime-knit upper', 'Nitro foam midsole', 'Carbon stability plate'],
+    stockStatus: 'In stock',
+    shippingNote: 'Ships within 24 hours.',
+    featuredNote: 'A standout daily pair with enough edge for evenings out.',
+    isNew: true
+  },
+  {
+    id: '2',
+    name: 'Aero-Core Prototype',
+    brand: 'VeloSnak Elite',
+    category: 'Lifestyle',
+    price: 240,
+    compareAtPrice: 285,
+    image:
+      'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&q=80&w=400',
+    description:
+      'Airy lattice sidewalls and a soft heel lining keep this pair light, breathable, and easy to wear from morning to night.',
+    shortBlurb: 'A clean, breathable silhouette for everyday rotation.',
+    colorway: 'Ghost White / Solar',
+    hypeScore: 92,
+    accentColor: '#ff9d00',
+    modelUrl: SHOE_MODEL_URL,
+    sizes: ['US 6', 'US 7', 'US 8', 'US 9', 'US 10'],
+    materials: ['Mono-mesh shell', 'Air lattice cage', 'Soft heel lining'],
+    stockStatus: 'Low stock',
+    shippingNote: 'Low-stock sizes ship within 48 hours.',
+    featuredNote: 'The easiest neutral pair in the collection.'
+  },
+  {
+    id: '3',
+    name: 'Cyber-Dunk Catalyst',
+    brand: 'Hyper-Street',
+    category: 'Basketball',
+    price: 185,
+    compareAtPrice: 220,
+    image:
+      'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&q=80&w=400',
+    description:
+      'Court-inspired panels, extra ankle padding, and bright accents give this pair energy without sacrificing comfort.',
+    shortBlurb: 'Court attitude with an easy streetwear finish.',
+    colorway: 'Urban Slate / Neon',
+    hypeScore: 89,
+    accentColor: '#bd00ff',
+    modelUrl: SHOE_MODEL_URL,
+    sizes: ['US 7', 'US 8', 'US 9', 'US 10', 'US 12'],
+    materials: ['Synthetic leather', 'Ankle padding', 'Grip-ridge outsole'],
+    stockStatus: 'In stock',
+    shippingNote: 'Includes free size exchange within 14 days.',
+    featuredNote: 'Bold color and solid comfort at an accessible price.',
+    isNew: true
+  },
+  {
+    id: '4',
+    name: 'Zenith Void Runner',
+    brand: 'Aether Lab',
+    category: 'Performance',
+    price: 310,
+    compareAtPrice: 355,
+    image:
+      'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=400',
+    description:
+      'A streamlined performance runner with a supportive plate, smooth ride, and dark finish that still feels refined.',
+    shortBlurb: 'Fast, structured, and polished.',
+    colorway: 'Deep Space / Emerald',
+    hypeScore: 95,
+    accentColor: '#10b981',
+    modelUrl: SHOE_MODEL_URL,
+    sizes: ['US 8', 'US 9', 'US 10', 'US 11', 'US 12'],
+    materials: ['Carbon plate', 'Compression foam', 'Microfibre tongue'],
+    stockStatus: 'Low stock',
+    shippingNote: 'Remaining sizes qualify for express shipping.',
+    featuredNote: 'A premium performance pair that still looks sharp off the track.'
+  },
+  {
+    id: '5',
+    name: 'Prism Flux Low',
+    brand: 'Hyper-Street',
+    category: 'Lifestyle',
+    price: 160,
+    compareAtPrice: 190,
+    image:
+      'https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&q=80&w=400',
+    description:
+      'Soft cushioning, lightweight textile panels, and a subtle shimmer finish make this an easy everyday option.',
+    shortBlurb: 'Easy comfort with a touch of shine.',
+    colorway: 'Prism / Cloud',
+    hypeScore: 84,
+    accentColor: '#f472b6',
+    modelUrl: SHOE_MODEL_URL,
+    sizes: ['US 6', 'US 7', 'US 8', 'US 9', 'US 10', 'US 11'],
+    materials: ['Ripstop textile', 'Rubber heel clip', 'Comfort foam sockliner'],
+    stockStatus: 'In stock',
+    shippingNote: 'Fast dispatch on all in-stock sizes.',
+    featuredNote: 'An easy entry point into the collection.'
+  },
+  {
+    id: '6',
+    name: 'Titanium Trek High',
+    brand: 'VeloSnak Elite',
+    category: 'Outdoor',
+    price: 350,
+    compareAtPrice: 395,
+    image:
+      'https://images.unsplash.com/photo-1605348532760-6753d2c43329?auto=format&fit=crop&q=80&w=400',
+    description:
+      'A weather-ready high-top with reinforced materials, extra cushioning, and strong grip for rougher days.',
+    shortBlurb: 'A durable high-top built for colder days and rough weather.',
+    colorway: 'Obsidian / Gold',
+    hypeScore: 99,
+    accentColor: '#fbbf24',
+    modelUrl: SHOE_MODEL_URL,
+    sizes: ['US 8', 'US 9', 'US 10', 'US 11'],
+    materials: ['Kevlar blend upper', 'Impact gel pods', 'Weather shield coating'],
+    stockStatus: 'Low stock',
+    shippingNote: 'Ships in protective packaging.',
+    featuredNote: 'The boldest pair in the collection, built to stand out.',
+    isNew: true
+  },
+  {
+    id: '7',
+    name: 'Neon Pulse Flare',
+    brand: 'Aether Lab',
+    category: 'Lifestyle',
+    price: 275,
+    compareAtPrice: 315,
+    image:
+      'https://images.unsplash.com/photo-1512374382149-433553157c36?auto=format&fit=crop&q=80&w=400',
+    description:
+      'Flexible knit, reactive lighting details, and soft heel support make this pair ideal for after-dark wear.',
+    shortBlurb: 'A statement pair made for nights out.',
+    colorway: 'Solar Flare / Obsidian',
+    hypeScore: 91,
+    accentColor: '#ff3e3e',
+    modelUrl: SHOE_MODEL_URL,
+    sizes: ['US 7', 'US 8', 'US 9', 'US 10'],
+    materials: ['Reactive knit shell', 'LED fibre detailing', 'Cushion pod heel'],
+    stockStatus: 'Waitlist',
+    shippingNote: 'The next batch ships next week.',
+    featuredNote: 'For buyers who want the loudest pair in the room.',
+    isNew: true
+  },
+  {
+    id: '8',
+    name: 'Lunar Glide S1',
+    brand: 'Hyper-Street',
+    category: 'Travel',
+    price: 215,
+    compareAtPrice: 250,
+    image:
+      'https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&q=80&w=400',
+    description:
+      'A softer sole, feather-light upper, and reflective trim make this pair ideal for travel and long walks.',
+    shortBlurb: 'Soft underfoot comfort for long days on the move.',
+    colorway: 'Lunar Grey / Volt',
+    hypeScore: 88,
+    accentColor: '#d4ff00',
+    modelUrl: SHOE_MODEL_URL,
+    sizes: ['US 7', 'US 8', 'US 9', 'US 10', 'US 11'],
+    materials: ['Feather mesh upper', 'Soft compression sole', 'Reflective trim'],
+    stockStatus: 'In stock',
+    shippingNote: 'Standard and express delivery available.',
+    featuredNote: 'A versatile option for travel, commuting, and everyday wear.',
+    isNew: true
+  }
+];

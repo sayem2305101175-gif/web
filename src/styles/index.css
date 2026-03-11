@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+:root {
+  --canvas: #f7f2eb;
+  --surface: rgba(255, 255, 255, 0.82);
+  --ink: #111827;
+  --muted: #5b6474;
+}
+
+body {
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(circle at top left, rgba(212, 175, 55, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.1), transparent 32%),
+    linear-gradient(180deg, #f7f2eb 0%, #ffffff 68%);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+.font-display {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.glass-surface {
+  background: var(--surface);
+  backdrop-filter: blur(18px);
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+@keyframes shadow-pulse-steady {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+    filter: blur(15px);
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.2;
+    filter: blur(20px);
+  }
+}
+
+@keyframes aurora-bg {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.holo-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  padding: 2px;
+  background: conic-gradient(from 180deg at 50% 50%, #e233ff 0%, #ff6b6b 25%, #f9ff33 50%, #33ff41 75%, #334eff 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float-card {
+  0% {
+    transform: rotateX(1deg) rotateY(-2deg) translateY(0px);
+  }
+
+  50% {
+    transform: rotateX(-1deg) rotateY(2deg) translateY(-12px);
+  }
+
+  100% {
+    transform: rotateX(1deg) rotateY(-2deg) translateY(0px);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4f4f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e4e4e7;
+  border-radius: 10px;
+}
