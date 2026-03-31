@@ -16,10 +16,32 @@ if (!customElements.get('model-viewer')) {
 }
 
 // Mock IntersectionObserver
-const MockIntersectionObserver = vi.fn(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
+class MockIntersectionObserver implements IntersectionObserver {
+  readonly root = null;
+  readonly rootMargin = '0px';
+  readonly thresholds = [0];
+
+  private readonly callback: IntersectionObserverCallback;
+
+  constructor(callback: IntersectionObserverCallback) {
+    this.callback = callback;
+  }
+
+  observe = vi.fn((target: Element) => {
+    this.callback(
+      [
+        {
+          isIntersecting: true,
+          target,
+        } as IntersectionObserverEntry,
+      ],
+      this
+    );
+  });
+
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+  takeRecords = vi.fn(() => []);
+}
 
 vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);

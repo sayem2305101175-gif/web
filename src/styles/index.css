@@ -5,6 +5,18 @@
   --surface: rgba(255, 255, 255, 0.82);
   --ink: #111827;
   --muted: #5b6474;
+  --ds-radius-sm: 0.75rem;
+  --ds-radius-md: 1rem;
+  --ds-radius-lg: 1.5rem;
+  --ds-radius-xl: 2rem;
+  --ds-radius-2xl: 2.5rem;
+  --ds-border-default: #e4e4e7;
+  --ds-border-soft: #f1f5f9;
+  --ds-surface-base: rgba(255, 255, 255, 0.96);
+  --ds-surface-muted: #fafafa;
+  --ds-shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.06);
+  --ds-shadow-deep: 0 24px 80px rgba(15, 23, 42, 0.22);
+  --ds-tracking-eyebrow: 0.35em;
 }
 
 body {
@@ -34,6 +46,47 @@ select {
 .glass-surface {
   background: var(--surface);
   backdrop-filter: blur(18px);
+}
+
+.ds-type-eyebrow {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: var(--ds-tracking-eyebrow);
+  text-transform: uppercase;
+  color: #71717a;
+}
+
+.ds-type-section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.ds-surface-card {
+  border: 1px solid var(--ds-border-default);
+  border-radius: var(--ds-radius-xl);
+  background: var(--ds-surface-base);
+  box-shadow: var(--ds-shadow-soft);
+}
+
+.ds-surface-card-soft {
+  border: 1px solid var(--ds-border-soft);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-surface-muted);
+}
+
+.ds-panel-drawer {
+  border-left: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(250, 247, 242, 0.98);
+  box-shadow: var(--ds-shadow-deep);
+}
+
+.ds-panel-dialog {
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(250, 247, 242, 0.98);
+  box-shadow: var(--ds-shadow-deep);
 }
 
 .perspective-1000 {
@@ -144,4 +197,15 @@ select {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #e4e4e7;
   border-radius: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

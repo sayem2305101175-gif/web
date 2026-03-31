@@ -1,6 +1,10 @@
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
 
-const normalizedBaseUrl = resolveApiBaseUrl((import.meta.env.VITE_API_BASE_URL || '').trim());
+// Vitest should stay in local-preview mode unless a test explicitly mocks backend transport.
+const normalizedBaseUrl =
+  import.meta.env.MODE === 'test' || import.meta.env['VITEST']
+    ? ''
+    : resolveApiBaseUrl((import.meta.env.VITE_API_BASE_URL || '').trim());
 
 export const isBackendConfigured = normalizedBaseUrl.length > 0;
 

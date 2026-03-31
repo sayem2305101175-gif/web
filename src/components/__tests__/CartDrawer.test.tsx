@@ -1,9 +1,9 @@
-import * as React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { CartProvider } from '../../context/CartContext';
-import { CART_STORAGE_KEY } from '../../lib/storage';
+import { CART_STORAGE_KEY, RECENT_ORDER_STORAGE_KEY } from '../../lib/storage';
 import { CartItem } from '../../types';
+import { sharedCommerceStore } from '../../features/admin/shared/store';
 
 vi.mock('../../services/apiClient', () => ({
   isBackendConfigured: false,
@@ -58,10 +58,26 @@ describe('CartDrawer', () => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(mockCart));
   });
 
-  it('shows preview checkout messaging when no backend is configured', () => {
+  it('submits checkout through the self-contained local-preview order flow', async () => {
     renderCartDrawer();
 
-    expect(screen.getByText(/live checkout is not connected in this deployment yet/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /checkout unavailable in preview/i })).toBeDisabled();
+    expect(screen.queryByText(/order submission is currently unavailable in this build/i)).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Step Five Tester' } });
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'step5@example.com' } });
+    fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'Dhaka' } });
+    fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'Bangladesh' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /place order/i }));
+
+    await screen.findByRole('heading', { name: /order confirmed/i });
+    const storedRecentOrder = JSON.parse(localStorage.getItem(RECENT_ORDER_STORAGE_KEY) ?? 'null') as {
+      contact?: { email?: string };
+    } | null;
+    expect(storedRecentOrder?.contact?.email).toBe('step5@example.com');
+    expect(sharedCommerceStore.getOrders()[0]?.contact.email).toBe('step5@example.com');
+    await waitFor(() => {
+      expect(JSON.parse(localStorage.getItem(CART_STORAGE_KEY) ?? 'null')).toEqual([]);
+    });
   });
 });
