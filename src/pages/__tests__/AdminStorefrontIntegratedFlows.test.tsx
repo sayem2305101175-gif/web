@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import AdminOrdersPage from '../../features/admin/pages/AdminOrdersPage';
 import { CartProvider } from '../../features/cart/context/CartContext';
 import { orderService } from '../../features/cart/services/orderService';
+import { ToastProvider } from '../../features/shared/context/ToastContext';
 import { WishlistProvider } from '../../features/wishlist/context/WishlistContext';
 import type { AdminProductEditorDraft } from '../../features/admin/shared/types';
 import { adminCatalogEditorService, adminCatalogService, adminContentService, adminOrderService } from '../../features/admin/shared/services';
@@ -59,11 +60,13 @@ const renderProductDetailRoute = (productId: string) =>
   render(
     <CartProvider>
       <WishlistProvider>
-        <MemoryRouter initialEntries={[`/product/${encodeURIComponent(productId)}`]}>
-          <Routes>
-            <Route path="/product/:productId" element={<ProductDetailPage />} />
-          </Routes>
-        </MemoryRouter>
+        <ToastProvider>
+          <MemoryRouter initialEntries={[`/product/${encodeURIComponent(productId)}`]}>
+            <Routes>
+              <Route path="/product/:productId" element={<ProductDetailPage />} />
+            </Routes>
+          </MemoryRouter>
+        </ToastProvider>
       </WishlistProvider>
     </CartProvider>
   );
@@ -219,7 +222,7 @@ describe('admin-to-storefront integrated truth flows', () => {
     });
 
     renderHome();
-    await screen.findByText('Integration Home Feature');
+    expect((await screen.findAllByText('Integration Home Feature')).length).toBeGreaterThan(0);
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Open feature' })).not.toBeDisabled();
     });

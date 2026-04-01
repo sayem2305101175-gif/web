@@ -4,6 +4,7 @@ import { useCart } from '../../cart/context/useCart';
 import { useWishlist } from '../../wishlist/context/useWishlist';
 import { stockToneClassMap } from '../../shared/design/stockTone';
 import { useOverlayA11y } from '../../shared/hooks/useOverlayA11y';
+import { useToast } from '../../shared/context/ToastContext';
 import { UIBadge, UIButton, UIDialogPanel, UISurfaceCard } from '../../shared/ui/primitives';
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 const ShoeModal: React.FC<Props> = ({ shoe, onClose }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { showToast } = useToast();
   const modalRef = React.useRef<HTMLDivElement>(null);
   const [selectedSize, setSelectedSize] = React.useState('');
 
@@ -171,6 +173,7 @@ const ShoeModal: React.FC<Props> = ({ shoe, onClose }) => {
           <UIButton
             onClick={() => {
               addToCart(shoe, selectedSize);
+              showToast('Added to bag', 'success');
               onClose();
             }}
             variant="primary"

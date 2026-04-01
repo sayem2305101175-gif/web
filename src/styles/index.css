@@ -30,6 +30,11 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d8 #f4f4f5;
+}
+
 h1,
 h2,
 .font-display {
@@ -101,6 +106,18 @@ select {
   backface-visibility: hidden;
 }
 
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes shadow-pulse-steady {
   0%,
   100% {
@@ -167,6 +184,27 @@ select {
   100% {
     transform: rotateX(1deg) rotateY(-2deg) translateY(0px);
   }
+}
+
+.fade-in-up-ready {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.fade-in-up-enter {
+  animation: fade-in-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.pressable {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.pressable:active {
+  transform: scale(0.97);
+}
+
+.pressable:disabled:active {
+  transform: none;
 }
 
 ::-webkit-scrollbar {

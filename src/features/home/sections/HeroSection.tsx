@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shoe } from '../../../types';
 import type { StorefrontContentSnapshot } from '../../../content/storefront';
+import { useScrollReveal } from '../../shared/hooks/useScrollReveal';
 
 interface HeroSectionProps {
   cartCount: number;
@@ -29,8 +30,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   styleCount,
   wishlistCount,
 }) => {
+  const { revealClassName, targetRef } = useScrollReveal<HTMLElement>('0px 0px -8% 0px');
+
   return (
-    <section className="mx-auto max-w-7xl">
+    <section ref={targetRef} className={`mx-auto max-w-7xl ${revealClassName}`}>
       <div className="rounded-full border border-white/70 bg-white/70 px-5 py-3 text-center text-[10px] font-black uppercase tracking-[0.35em] text-zinc-600 shadow-[0_10px_25px_rgba(15,23,42,0.04)] backdrop-blur">
         {heroContent.stripText}
       </div>

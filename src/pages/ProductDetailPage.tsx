@@ -6,11 +6,14 @@ import { storefrontCatalogRepository } from '../features/commerce/repositories';
 import { useCart } from '../features/cart/context/useCart';
 import { useWishlist } from '../features/wishlist/context/useWishlist';
 import { stockToneClassMap } from '../features/shared/design/stockTone';
+import { useToast } from '../features/shared/context/ToastContext';
 import { use3DViewerProfile } from '../features/shared/hooks/use3DViewerProfile';
+import { useDocumentTitle } from '../features/shared/hooks/useDocumentTitle';
 import { useInViewportOnce } from '../features/shared/hooks/useInViewportOnce';
 import { UIBadge, UIButton, UISurfaceCard } from '../features/shared/ui/primitives';
 import CommerceRouteHeader from '../features/shared/ui/CommerceRouteHeader';
 import SkeletonCard from '../features/shared/ui/SkeletonCard';
+import ImageZoomLightbox from '../features/product/components/ImageZoomLightbox';
 
 const PRODUCT_LOAD_ERROR_MESSAGE = 'The latest product details could not be loaded. Please try again.';
 
@@ -19,6 +22,7 @@ const ProductDetailPage: React.FC = () => {
   const { productId } = useParams();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { showToast } = useToast();
   const [shoe, setShoe] = React.useState<Shoe | null>(null);
   const [selectedSize, setSelectedSize] = React.useState('');
   const [relatedShoes, setRelatedShoes] = React.useState<Shoe[]>([]);
@@ -28,8 +32,10 @@ const ProductDetailPage: React.FC = () => {
   const [allowConstrained3D, setAllowConstrained3D] = React.useState(false);
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [reloadKey, setReloadKey] = React.useState(0);
+  const [isZoomOpen, setIsZoomOpen] = React.useState(false);
   const { isConstrainedDevice, prefersReducedMotion } = use3DViewerProfile();
   const { isInViewport: isViewerInViewport, targetRef: viewerRef } = useInViewportOnce<HTMLDivElement>('200px');
+  useDocumentTitle(`${shoe?.name ?? 'Product'} | Velosnak Atelier`);
 
   React.useEffect(() => {
     let isActive = true;
@@ -71,7 +77,26 @@ const ProductDetailPage: React.FC = () => {
             return;
           }
 
-          setRelatedShoes(allShoes.filter((candidate) => candidate.id !== targetShoe.id).slice(0, 3));
+          setRelatedShoes(
+            allShoes
+              .filter((candidate) => candidate.id !== targetShoe.id)
+              .sort((firstCandidate, secondCandidate) => {
+                const firstBrandMatch = Number(firstCandidate.brand === targetShoe.brand);
+                const secondBrandMatch = Number(secondCandidate.brand === targetShoe.brand);
+                if (firstBrandMatch !== secondBrandMatch) {
+                  return secondBrandMatch - firstBrandMatch;
+                }
+
+                const firstCategoryMatch = Number(firstCandidate.category === targetShoe.category);
+                const secondCategoryMatch = Number(secondCandidate.category === targetShoe.category);
+                if (firstCategoryMatch !== secondCategoryMatch) {
+                  return secondCategoryMatch - firstCategoryMatch;
+                }
+
+                return firstCandidate.name.localeCompare(secondCandidate.name);
+              })
+              .slice(0, 3)
+          );
         } catch {
           if (!isActive) {
             return;
@@ -90,6 +115,7 @@ const ProductDetailPage: React.FC = () => {
         setRelatedShoes([]);
         setIsViewerUnavailable(false);
         setAllowConstrained3D(false);
+        setIsZoomOpen(false);
       } finally {
         if (isActive) {
           setIsLoading(false);
@@ -115,6 +141,7 @@ const ProductDetailPage: React.FC = () => {
 
     await window.navigator.clipboard.writeText(window.location.href);
     setCopiedLink(true);
+    showToast('Link copied', 'info');
     window.setTimeout(() => setCopiedLink(false), 1500);
   };
 
@@ -125,7 +152,18 @@ const ProductDetailPage: React.FC = () => {
 
     const resolvedSize = selectedSize || shoe.sizes[0] || 'US 9';
     addToCart(shoe, resolvedSize);
+    showToast('Added to bag', 'success');
   }, [addToCart, selectedSize, shoe]);
+
+  const handleWishlistToggle = React.useCallback(() => {
+    if (!shoe) {
+      return;
+    }
+
+    const wasWishlisted = isInWishlist(shoe.id);
+    toggleWishlist(shoe);
+    showToast(wasWishlisted ? 'Removed' : 'Saved', wasWishlisted ? 'info' : 'success');
+  }, [isInWishlist, shoe, showToast, toggleWishlist]);
 
   const handleBuyNow = () => {
     handleAddToBag();
@@ -259,6 +297,21 @@ const ProductDetailPage: React.FC = () => {
       />
 
       <section className="mx-auto max-w-7xl">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-6 flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-zinc-500"
+        >
+          <Link to="/" className="transition hover:text-zinc-950">
+            Home
+          </Link>
+          <span>/</span>
+          <Link to="/collection" className="transition hover:text-zinc-950">
+            Collection
+          </Link>
+          <span>/</span>
+          <span className="text-zinc-950">{shoe.name}</span>
+        </nav>
+
         <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr]">
           <UISurfaceCard className="p-6 md:p-8">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
@@ -280,13 +333,21 @@ const ProductDetailPage: React.FC = () => {
                 className="pointer-events-none absolute inset-0 opacity-40"
                 style={{ background: `radial-gradient(circle, ${shoe.accentColor}44 0%, transparent 70%)` }}
               />
+
               <div ref={viewerRef} className="relative z-10 mx-auto h-[22rem] w-full md:h-[28rem]">
                 {!shouldRender3DViewer ? (
-                  <img
-                    src={shoe.image}
-                    alt={shoe.name}
-                    className="mx-auto h-full w-full object-contain drop-shadow-[0_24px_60px_rgba(15,23,42,0.2)]"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsZoomOpen(true)}
+                    className="block h-full w-full"
+                    aria-label={`Open zoom view for ${shoe.name}`}
+                  >
+                    <img
+                      src={shoe.image}
+                      alt={shoe.name}
+                      className="mx-auto h-full w-full object-contain drop-shadow-[0_24px_60px_rgba(15,23,42,0.2)]"
+                    />
+                  </button>
                 ) : (
                   <model-viewer
                     src={shoe.modelUrl}
@@ -316,8 +377,23 @@ const ProductDetailPage: React.FC = () => {
                     </UIButton>
                   </div>
                 ) : null}
+                {shouldRender3DViewer ? (
+                  <div className="absolute right-4 top-4 z-20">
+                    <UIButton
+                      variant="secondary"
+                      size="sm"
+                      className="border-white/80 bg-white/90 text-zinc-700 backdrop-blur"
+                      onClick={() => setIsZoomOpen(true)}
+                      aria-label={`Open zoom view for ${shoe.name}`}
+                    >
+                      Zoom image
+                    </UIButton>
+                  </div>
+                ) : null}
               </div>
             </div>
+
+            <p className="mt-3 text-xs font-medium text-zinc-500">Click the image to inspect it in a larger view.</p>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <UISurfaceCard tone="soft" className="rounded-2xl px-4 py-3">
@@ -342,7 +418,7 @@ const ProductDetailPage: React.FC = () => {
                 <h2 className="mt-2 text-4xl font-black tracking-tight text-zinc-950">{shoe.name}</h2>
               </div>
               <UIButton
-                onClick={() => toggleWishlist(shoe)}
+                onClick={handleWishlistToggle}
                 variant={isWishlisted ? 'primary' : 'secondary'}
                 size="sm"
                 className={`${
@@ -453,6 +529,34 @@ const ProductDetailPage: React.FC = () => {
         </div>
       </section>
 
+      <section className="mx-auto mt-10 max-w-7xl">
+        <UISurfaceCard className="rounded-[2rem] p-6 md:p-8">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="ds-type-eyebrow">Reviews</p>
+              <h3 className="mt-2 text-2xl font-black tracking-tight text-zinc-950">No reviews yet</h3>
+            </div>
+            <UIButton variant="secondary" size="sm" className="rounded-full" disabled>
+              Write a review
+            </UIButton>
+          </div>
+
+          <div className="mt-4 flex items-center gap-2 text-amber-400" aria-label="Product review placeholder">
+            {Array.from({ length: 5 }, (_, index) => (
+              <span key={index} aria-hidden="true">
+                ★
+              </span>
+            ))}
+            <span className="ml-2 text-sm font-medium text-zinc-500">Be the first to review this pair.</span>
+          </div>
+
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-zinc-600">
+            Customer ratings are not active in this build yet. This section is kept visible so buyers can see where
+            social proof will appear once a review backend is connected.
+          </p>
+        </UISurfaceCard>
+      </section>
+
       {relatedShoes.length > 0 ? (
         <section className="mx-auto mt-12 max-w-7xl">
           <div className="mb-5 flex items-center justify-between">
@@ -480,6 +584,8 @@ const ProductDetailPage: React.FC = () => {
           </div>
         </section>
       ) : null}
+
+      <ImageZoomLightbox image={shoe.image} isOpen={isZoomOpen} onClose={() => setIsZoomOpen(false)} title={shoe.name} />
     </div>
   );
 };

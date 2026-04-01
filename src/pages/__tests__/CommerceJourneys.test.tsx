@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { SHOES } from '../../constants';
 import { CartProvider } from '../../features/cart/context/CartContext';
+import { ToastProvider } from '../../features/shared/context/ToastContext';
 import Layout from '../../features/shared/ui/Layout';
 import { CART_STORAGE_KEY, RECENT_ORDER_STORAGE_KEY } from '../../lib/storage';
 import { WishlistProvider } from '../../features/wishlist/context/WishlistContext';
@@ -58,15 +59,17 @@ const renderCommerceApp = (initialEntry: string) =>
   render(
     <CartProvider>
       <WishlistProvider>
-        <MemoryRouter initialEntries={[initialEntry]}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route path="collection" element={<CollectionPage />} />
-              <Route path="product/:productId" element={<ProductDetailPage />} />
-              <Route path="checkout" element={<CheckoutPage />} />
-            </Route>
-          </Routes>
-        </MemoryRouter>
+        <ToastProvider>
+          <MemoryRouter initialEntries={[initialEntry]}>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route path="collection" element={<CollectionPage />} />
+                <Route path="product/:productId" element={<ProductDetailPage />} />
+                <Route path="checkout" element={<CheckoutPage />} />
+              </Route>
+            </Routes>
+          </MemoryRouter>
+        </ToastProvider>
       </WishlistProvider>
     </CartProvider>
   );

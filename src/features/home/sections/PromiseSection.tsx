@@ -1,13 +1,16 @@
 import React from 'react';
 import type { StorefrontContentSnapshot } from '../../../content/storefront';
+import { useScrollReveal } from '../../shared/hooks/useScrollReveal';
 
 interface PromiseSectionProps {
   trustContent: StorefrontContentSnapshot['trust'];
 }
 
 const PromiseSection: React.FC<PromiseSectionProps> = ({ trustContent }) => {
+  const { revealClassName, targetRef } = useScrollReveal<HTMLElement>('0px 0px -8% 0px');
+
   return (
-    <section id="promise" className="mx-auto mt-16 max-w-7xl">
+    <section id="promise" ref={targetRef} className={`mx-auto mt-16 max-w-7xl ${revealClassName}`}>
       <div className="mb-8">
         <p className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500">{trustContent.eyebrow}</p>
         <h2 className="mt-2 text-4xl font-black tracking-tight text-zinc-950">{trustContent.headline}</h2>

@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../features/wishlist/context/useWishlist';
+import { useDocumentTitle } from '../features/shared/hooks/useDocumentTitle';
 import CommerceRouteHeader from '../features/shared/ui/CommerceRouteHeader';
 
 const WishlistPage: React.FC = () => {
+  useDocumentTitle('Wishlist | Velosnak Atelier');
+
   const { wishlist } = useWishlist();
 
   return (

@@ -1,11 +1,14 @@
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDocumentTitle } from '../features/shared/hooks/useDocumentTitle';
 import CommerceRouteHeader from '../features/shared/ui/CommerceRouteHeader';
 import { UISurfaceCard } from '../features/shared/ui/primitives';
 
 const CartDrawer = React.lazy(() => import('../features/cart/components/CartDrawer'));
 
 const CheckoutPage: React.FC = () => {
+  useDocumentTitle('Checkout | Velosnak Atelier');
+
   const navigate = useNavigate();
 
   const handleClose = React.useCallback(() => {

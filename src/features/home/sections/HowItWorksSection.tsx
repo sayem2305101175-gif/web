@@ -1,9 +1,12 @@
 import React from 'react';
 import { BUYING_STEPS } from '../../../content/storefront';
+import { useScrollReveal } from '../../shared/hooks/useScrollReveal';
 
 const HowItWorksSection: React.FC = () => {
+  const { revealClassName, targetRef } = useScrollReveal<HTMLElement>('0px 0px -8% 0px');
+
   return (
-    <section className="mx-auto mt-20 max-w-7xl">
+    <section ref={targetRef} className={`mx-auto mt-20 max-w-7xl ${revealClassName}`}>
       <div className="grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
         <div className="rounded-[3rem] border border-zinc-200 bg-zinc-950 p-8 text-white">
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-300">How it works</p>

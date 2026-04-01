@@ -14,6 +14,7 @@ import FaqSection from '../features/home/sections/FaqSection';
 import CtaSection from '../features/home/sections/CtaSection';
 import HowItWorksSection from '../features/home/sections/HowItWorksSection';
 import FooterSection from '../features/home/sections/FooterSection';
+import { useDocumentTitle } from '../features/shared/hooks/useDocumentTitle';
 import { scrollToSection } from '../features/shared/utils/scrollToSection';
 
 const ShoeModal = React.lazy(() => import('../features/product/components/ShoeModal'));
@@ -21,6 +22,8 @@ const ProfileModal = React.lazy(() => import('../features/wishlist/components/Pr
 const CartDrawer = React.lazy(() => import('../features/cart/components/CartDrawer'));
 
 const Home: React.FC = () => {
+  useDocumentTitle('Velosnak Atelier | Premium Sneaker Boutique');
+
   const [selectedShoe, setSelectedShoe] = React.useState<Shoe | null>(null);
   const [filter, setFilter] = React.useState('All');
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -145,10 +148,15 @@ const Home: React.FC = () => {
         filter={filter}
         filteredShoes={filteredShoes}
         loading={loading}
+        onClearFilters={() => {
+          setFilter('All');
+          setSearchQuery('');
+        }}
         onSelectShoe={setSelectedShoe}
         onRetry={retryCatalog}
         searchQuery={searchQuery}
         setFilter={setFilter}
+        totalResults={filteredShoes.length}
       />
 
       <HowItWorksSection />

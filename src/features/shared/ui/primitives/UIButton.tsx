@@ -35,7 +35,7 @@ export default function UIButton({
     <button
       type={type}
       className={cx(
-        'inline-flex items-center justify-center rounded-full border font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950/25 disabled:cursor-not-allowed disabled:opacity-55',
+        'pressable inline-flex items-center justify-center rounded-full border font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950/25 disabled:cursor-not-allowed disabled:opacity-55',
         variantClassMap[variant],
         sizeClassMap[size],
         className

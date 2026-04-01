@@ -7,26 +7,38 @@ import { Shoe } from '../../../types';
 interface CollectionSectionProps {
   brands: string[];
   catalogError: string | null;
+  currentPage?: number;
   filter: string;
   filteredShoes: Shoe[];
   loading: boolean;
+  onClearFilters?: () => void;
+  onPageChange?: (page: number) => void;
   onSelectShoe: (shoe: Shoe) => void;
   onRetry: () => void;
   searchQuery: string;
   setFilter: (filter: string) => void;
+  totalPages?: number;
+  totalResults?: number;
 }
 
 const CollectionSection: React.FC<CollectionSectionProps> = ({
   brands,
   catalogError,
+  currentPage = 1,
   filter,
   filteredShoes,
   loading,
+  onClearFilters,
+  onPageChange,
   onSelectShoe,
   onRetry,
   searchQuery,
   setFilter,
+  totalPages = 1,
+  totalResults = filteredShoes.length,
 }) => {
+  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
+
   return (
     <section id="collection" className="mx-auto mt-20 max-w-7xl">
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
@@ -37,7 +49,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({
           </h2>
         </div>
         <p className="text-sm font-medium text-zinc-500">
-          {loading ? 'Loading styles...' : `${filteredShoes.length} styles available`}
+          {loading ? 'Loading styles...' : `${totalResults} styles available`}
         </p>
       </div>
 
@@ -88,15 +100,60 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({
             <p className="mt-3 text-sm leading-7 text-zinc-600">
               Try a brand name, category, or colorway to widen the results.
             </p>
+            {onClearFilters ? (
+              <UIButton onClick={onClearFilters} variant="secondary" size="md" className="mt-6 rounded-full">
+                Clear filters
+              </UIButton>
+            ) : null}
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredShoes.map((shoe) => (
-              <ThreeDShoeCard key={shoe.id} shoe={shoe} onClick={onSelectShoe} />
+              <div
+                key={shoe.id}
+                className="transition-transform duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:drop-shadow-[0_22px_42px_rgba(15,23,42,0.12)]"
+              >
+                <ThreeDShoeCard shoe={shoe} onClick={onSelectShoe} />
+              </div>
             ))}
           </div>
         )}
       </div>
+
+      {!loading && filteredShoes.length > 0 && totalPages > 1 && onPageChange ? (
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <UIButton
+            onClick={() => onPageChange(currentPage - 1)}
+            variant="secondary"
+            size="sm"
+            className="rounded-full"
+            disabled={currentPage === 1}
+          >
+            Prev
+          </UIButton>
+          {pageNumbers.map((pageNumber) => (
+            <UIButton
+              key={pageNumber}
+              onClick={() => onPageChange(pageNumber)}
+              variant={pageNumber === currentPage ? 'primary' : 'secondary'}
+              size="sm"
+              className="rounded-full"
+              aria-label={`Go to page ${pageNumber}`}
+            >
+              {pageNumber}
+            </UIButton>
+          ))}
+          <UIButton
+            onClick={() => onPageChange(currentPage + 1)}
+            variant="secondary"
+            size="sm"
+            className="rounded-full"
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </UIButton>
+        </div>
+      ) : null}
     </section>
   );
 };

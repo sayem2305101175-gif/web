@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { SHOES } from '../../constants';
 import { CartProvider } from '../../features/cart/context/CartContext';
+import { ToastProvider } from '../../features/shared/context/ToastContext';
 import { WishlistProvider } from '../../features/wishlist/context/WishlistContext';
 import ProductDetailPage from '../ProductDetailPage';
 
@@ -56,11 +57,13 @@ const renderProductDetailRoute = (productId: string) =>
   render(
     <CartProvider>
       <WishlistProvider>
-        <MemoryRouter initialEntries={[`/product/${encodeURIComponent(productId)}`]}>
-          <Routes>
-            <Route path="/product/:productId" element={<ProductDetailPage />} />
-          </Routes>
-        </MemoryRouter>
+        <ToastProvider>
+          <MemoryRouter initialEntries={[`/product/${encodeURIComponent(productId)}`]}>
+            <Routes>
+              <Route path="/product/:productId" element={<ProductDetailPage />} />
+            </Routes>
+          </MemoryRouter>
+        </ToastProvider>
       </WishlistProvider>
     </CartProvider>
   );
@@ -79,6 +82,12 @@ describe('ProductDetailPage', () => {
     mockedCatalogService.getNewArrivals.mockResolvedValue(SHOES.filter((shoe) => Boolean(shoe.isNew)));
     mockedCatalogService.getShoeById.mockImplementation(async (id: string) => SHOES.find((shoe) => shoe.id === id));
     mockedCatalogService.getAllShoes.mockResolvedValue([...SHOES]);
+    Object.defineProperty(window.navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: vi.fn().mockResolvedValue(undefined),
+      },
+    });
   });
 
   afterEach(() => {
@@ -134,4 +143,88 @@ describe('ProductDetailPage', () => {
     expect(screen.queryByText(/product details could not be loaded\./i)).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: /you may also like/i })).not.toBeInTheDocument();
   });
+
+  it('renders breadcrumb and reviews placeholder content', async () => {
+    renderProductDetailRoute(primaryShoe.id);
+
+    await screen.findByText(new RegExp(`product id: ${primaryShoe.id}`, 'i'));
+    const breadcrumb = screen.getByRole('navigation', { name: /breadcrumb/i });
+    expect(within(breadcrumb).getByRole('link', { name: /^home$/i })).toHaveAttribute('href', '/');
+    expect(within(breadcrumb).getByRole('link', { name: /^collection$/i })).toHaveAttribute('href', '/collection');
+    expect(screen.getByRole('heading', { name: /no reviews yet/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /write a review/i })).toBeDisabled();
+  });
+
+  it('opens the image zoom lightbox and closes it on escape', async () => {
+    renderProductDetailRoute(primaryShoe.id);
+
+    await screen.findByText(new RegExp(`product id: ${primaryShoe.id}`, 'i'));
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`open zoom view for ${primaryShoe.name}`, 'i') }));
+
+    expect(await screen.findByRole('dialog', { name: primaryShoe.name })).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(screen.queryByRole('dialog', { name: primaryShoe.name })).not.toBeInTheDocument();
+  });
+
+  it('prioritizes same-brand related products before other matches', async () => {
+    const sameBrandAlt = {
+      ...SHOES[3],
+      id: 'same-brand-priority',
+      name: 'Aardvark Velocity',
+      brand: primaryShoe.brand,
+      category: 'Travel',
+    };
+    const sameCategoryOnly = {
+      ...SHOES[4],
+      id: 'same-category-only',
+      name: 'Zulu Performance',
+      brand: 'Outside Label',
+      category: primaryShoe.category,
+    };
+    const unrelated = {
+      ...SHOES[5],
+      id: 'unrelated-fallback',
+      name: 'Midway Drift',
+      brand: 'Another House',
+      category: 'Outdoor',
+    };
+
+    mockedCatalogService.getAllShoes.mockResolvedValueOnce([primaryShoe, sameCategoryOnly, unrelated, sameBrandAlt]);
+
+    renderProductDetailRoute(primaryShoe.id);
+
+    await screen.findByText(new RegExp(`product id: ${primaryShoe.id}`, 'i'));
+    const relatedLinks = screen.getAllByRole('link').filter((element) =>
+      element.getAttribute('href')?.startsWith('/product/')
+    );
+
+    expect(relatedLinks[0]).toHaveAttribute('href', '/product/same-brand-priority');
+    expect(relatedLinks[1]).toHaveAttribute('href', '/product/same-category-only');
+  });
+
+  it('shows add-to-bag, copy-link, and wishlist toasts', async () => {
+    renderProductDetailRoute(primaryShoe.id);
+
+    await screen.findByText(new RegExp(`product id: ${primaryShoe.id}`, 'i'));
+
+    fireEvent.click(screen.getByRole('button', { name: /copy link/i }));
+    expect(await screen.findByRole('status')).toHaveTextContent(/link copied/i);
+
+    fireEvent.click(screen.getByRole('button', { name: /add us 7 to bag/i }));
+    expect(screen.getByRole('status')).toHaveTextContent(/added to bag/i);
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+    expect(screen.getByRole('status')).toHaveTextContent(/^saved$/i);
+
+    fireEvent.click(screen.getByRole('button', { name: /^saved$/i }));
+    expect(screen.getByRole('status')).toHaveTextContent(/^removed$/i);
+
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 3100));
+    });
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  }, 10000);
 });
