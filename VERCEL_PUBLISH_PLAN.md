@@ -54,8 +54,8 @@ How it works:
 
 - Deploy only the Vite frontend to Vercel.
 - Do not set `VITE_API_BASE_URL` in Vercel yet.
-- The app will still render product data from the frontend fallback in `src/services/shoeService.ts`.
-- Order submission will stay unavailable because `src/services/orderService.ts` requires a configured backend.
+- The app will still render product data through the local-preview commerce repositories used by `src/features/catalog/services/shoeService.ts`.
+- Checkout will still work in local-preview mode through `src/features/cart/services/orderService.ts`, but orders will stay demo-only and will not persist through a production backend.
 
 Pros:
 
@@ -150,8 +150,8 @@ Actions:
 
 Expected result:
 
-- Homepage, browsing, product detail flows, and non-backend UI should work.
-- Ordering should remain disabled unless the backend is deployed separately.
+- Homepage, browsing, product detail flows, and checkout UI should work.
+- Orders created in this mode are preview/demo data, not durable production orders.
 
 ### Phase 2: Decide the production backend shape
 

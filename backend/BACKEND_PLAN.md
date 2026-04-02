@@ -24,10 +24,10 @@ Current data sources:
 Current frontend clients:
 
 - `src/services/apiClient.ts`
-- `src/services/shoeService.ts`
-- `src/services/orderService.ts`
+- `src/features/catalog/services/shoeService.ts`
+- `src/features/cart/services/orderService.ts`
 - `src/pages/Home.tsx`
-- `src/components/CartDrawer.tsx`
+- `src/features/cart/components/CartDrawer.tsx`
 
 ## Visual Backend Build
 
@@ -80,7 +80,7 @@ flowchart TD
 flowchart LR
     subgraph Frontend
         Home["Home.tsx"]
-        Cart["CartDrawer.tsx"]
+        Cart["features/cart/components/CartDrawer.tsx"]
         ShoeSvc["shoeService.ts"]
         OrderSvc["orderService.ts"]
         ApiClient["apiClient.ts"]
@@ -119,7 +119,7 @@ This sequence diagram shows the most important backend path: how an order moves 
 ```mermaid
 sequenceDiagram
     participant User
-    participant Cart as CartDrawer.tsx
+    participant Cart as features/cart/components/CartDrawer.tsx
     participant OrderSvc as orderService.ts
     participant Api as apiClient.ts
     participant Server as backend/src/server.js
@@ -164,22 +164,24 @@ flowchart LR
 
 ### Catalog Read Flow
 
-1. `Home.tsx` asks `shoeService.ts` for shoes.
-2. `shoeService.ts` calls `apiClient.ts` when `VITE_API_BASE_URL` is configured.
-3. `apiClient.ts` sends `GET /api/shoes` or `GET /api/shoes/:id`.
-4. `backend/src/server.js` filters against `src/data/shoes.js`.
-5. The backend returns normalized JSON to the frontend.
+1. `Home.tsx` asks `features/catalog/services/shoeService.ts` for shoes.
+2. `shoeService.ts` reads through the active commerce repository mode.
+3. When `VITE_API_BASE_URL` is configured, the backend repository uses `src/services/apiClient.ts`.
+4. `apiClient.ts` sends `GET /api/shoes` or `GET /api/shoes/:id`.
+5. `backend/src/server.js` filters against `src/data/shoes.js`.
+6. The backend returns normalized JSON to the frontend.
 
 ### Order Create Flow
 
-1. `CartDrawer.tsx` builds an order snapshot on the client.
-2. `orderService.ts` sends `POST /api/orders`.
-3. `backend/src/server.js` validates the payload.
-4. The backend resolves each item against `shoeIndex` from `src/data/shoes.js`.
-5. The backend recalculates subtotal, shipping, and total.
-6. The backend creates a server order id and timestamp.
-7. The backend writes the final order to `backend/data/orders.json`.
-8. The created order is returned to the frontend and cached in local storage.
+1. `features/cart/components/CartDrawer.tsx` builds an order snapshot on the client.
+2. `features/cart/services/orderService.ts` submits through the active commerce repository mode.
+3. When backend mode is active, the backend repository sends `POST /api/orders`.
+4. `backend/src/server.js` validates the payload.
+5. The backend resolves each item against `shoeIndex` from `src/data/shoes.js`.
+6. The backend recalculates subtotal, shipping, and total.
+7. The backend creates a server order id and timestamp.
+8. The backend writes the final order to `backend/data/orders.json`.
+9. The created order is returned to the frontend and cached in local storage.
 
 ### Admin Read Flow
 
