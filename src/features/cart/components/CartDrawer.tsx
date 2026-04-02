@@ -151,7 +151,7 @@ const CartDrawer: React.FC<Props> = ({ isOpen, mode = 'overlay', onClose }) => {
         tabIndex={-1}
         className={
           isPageMode
-            ? 'min-h-[42rem] rounded-[2.5rem] border border-white/70 bg-white/85 shadow-[0_30px_90px_rgba(15,23,42,0.14)] backdrop-blur'
+            ? 'min-h-[42rem] w-full max-w-none rounded-[2.5rem] border border-white/70 bg-white/85 p-6 shadow-[0_30px_90px_rgba(15,23,42,0.14)] backdrop-blur md:p-8 lg:p-10'
             : undefined
         }
       >
@@ -198,63 +198,67 @@ const CartDrawer: React.FC<Props> = ({ isOpen, mode = 'overlay', onClose }) => {
           />
         ) : (
           <>
-            <div className="space-y-4">
-              {cart.length === 0 ? (
-                <div className="rounded-[2rem] border border-dashed border-zinc-300 bg-white/70 p-10 text-center">
-                  <p className="text-lg font-black tracking-tight text-zinc-950">Your bag is empty.</p>
-                  <p className="mt-3 text-sm leading-6 text-zinc-600">
-                    Add a pair from the collection and it will appear here with size, quantity, and delivery details.
-                  </p>
+            <div className={isPageMode ? 'grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(22rem,0.9fr)]' : undefined}>
+              <div>
+                <div className="space-y-4">
+                  {cart.length === 0 ? (
+                    <div className="rounded-[2rem] border border-dashed border-zinc-300 bg-white/70 p-10 text-center">
+                      <p className="text-lg font-black tracking-tight text-zinc-950">Your bag is empty.</p>
+                      <p className="mt-3 text-sm leading-6 text-zinc-600">
+                        Add a pair from the collection and it will appear here with size, quantity, and delivery details.
+                      </p>
+                    </div>
+                  ) : (
+                    cart.map((item) => (
+                      <CartLineCard
+                        key={item.lineId}
+                        item={item}
+                        onDecrease={() => updateQuantity(item.lineId, -1)}
+                        onIncrease={() => {
+                          if (item.quantity < 10) {
+                            updateQuantity(item.lineId, 1);
+                          }
+                        }}
+                        onQuantitySelect={(nextQuantity) => {
+                          const delta = nextQuantity - item.quantity;
+                          if (delta !== 0) {
+                            updateQuantity(item.lineId, delta);
+                          }
+                        }}
+                        onRemove={() => removeFromCart(item.lineId)}
+                      />
+                    ))
+                  )}
                 </div>
-              ) : (
-                cart.map((item) => (
-                  <CartLineCard
-                    key={item.lineId}
-                    item={item}
-                    onDecrease={() => updateQuantity(item.lineId, -1)}
-                    onIncrease={() => {
-                      if (item.quantity < 10) {
-                        updateQuantity(item.lineId, 1);
-                      }
-                    }}
-                    onQuantitySelect={(nextQuantity) => {
-                      const delta = nextQuantity - item.quantity;
-                      if (delta !== 0) {
-                        updateQuantity(item.lineId, delta);
-                      }
-                    }}
-                    onRemove={() => removeFromCart(item.lineId)}
-                  />
-                ))
-              )}
-            </div>
 
-            <UISurfaceCard className="mt-8 rounded-[2rem] p-6">
-              <p className="ds-type-eyebrow">Order summary</p>
-              <div className="mt-4 flex items-center justify-between text-sm font-medium text-zinc-600">
-                <span>Items ({itemCount})</span>
-                <span>${cartTotal}</span>
+                <UISurfaceCard className="mt-8 rounded-[2rem] p-6">
+                  <p className="ds-type-eyebrow">Order summary</p>
+                  <div className="mt-4 flex items-center justify-between text-sm font-medium text-zinc-600">
+                    <span>Items ({itemCount})</span>
+                    <span>${cartTotal}</span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-sm font-medium text-zinc-600">
+                    <span>Shipping ({contact.delivery})</span>
+                    <span>{shippingCost === 0 ? 'Free' : `$${shippingCost}`}</span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-sm font-medium text-zinc-600">
+                    <span>Taxes</span>
+                    <span>Included</span>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between border-t border-zinc-100 pt-4">
+                    <span className="text-sm font-black uppercase tracking-[0.25em] text-zinc-500">Total</span>
+                    <span className="text-2xl font-black tracking-tight text-zinc-950">${total}</span>
+                  </div>
+                  <p className="mt-4 text-xs text-zinc-500">
+                    {amountForFreeShipping > 0
+                      ? `$${amountForFreeShipping} away from free shipping (orders over $300).`
+                      : 'You unlocked free shipping.'}
+                  </p>
+                </UISurfaceCard>
               </div>
-              <div className="mt-2 flex items-center justify-between text-sm font-medium text-zinc-600">
-                <span>Shipping ({contact.delivery})</span>
-                <span>{shippingCost === 0 ? 'Free' : `$${shippingCost}`}</span>
-              </div>
-              <div className="mt-2 flex items-center justify-between text-sm font-medium text-zinc-600">
-                <span>Taxes</span>
-                <span>Included</span>
-              </div>
-              <div className="mt-4 flex items-center justify-between border-t border-zinc-100 pt-4">
-                <span className="text-sm font-black uppercase tracking-[0.25em] text-zinc-500">Total</span>
-                <span className="text-2xl font-black tracking-tight text-zinc-950">${total}</span>
-              </div>
-              <p className="mt-4 text-xs text-zinc-500">
-                {amountForFreeShipping > 0
-                  ? `$${amountForFreeShipping} away from free shipping (orders over $300).`
-                  : 'You unlocked free shipping.'}
-              </p>
-            </UISurfaceCard>
 
-            <div className="mt-8 space-y-5" role="form" aria-label="Checkout details">
+              <div className={isPageMode ? 'lg:sticky lg:top-28 lg:self-start' : undefined}>
+                <div className="space-y-5" role="form" aria-label="Checkout details">
               <div className="grid gap-4 md:grid-cols-2">
                 <InputField
                   label="Name"
@@ -338,8 +342,10 @@ const CartDrawer: React.FC<Props> = ({ isOpen, mode = 'overlay', onClose }) => {
                   ? 'Placing order...'
                   : isOrderingAvailable
                     ? 'Place order'
-                    : 'Order submission unavailable'}
+                  : 'Order submission unavailable'}
               </UIButton>
+                </div>
+              </div>
             </div>
           </>
         )}

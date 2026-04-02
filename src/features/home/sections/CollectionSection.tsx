@@ -79,9 +79,9 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({
         ))}
       </div>
 
-      <div className="mt-10 min-h-[420px]">
+      <div className="mt-10">
         {loading ? (
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
             {[1, 2, 3, 4, 5, 6].map((item) => (
               <SkeletonCard key={item} />
             ))}
@@ -107,7 +107,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({
             ) : null}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
             {filteredShoes.map((shoe) => (
               <div
                 key={shoe.id}
